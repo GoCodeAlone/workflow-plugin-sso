@@ -37,7 +37,7 @@ func (s *validateTokenStep) Execute(ctx context.Context, triggerData map[string]
 	}
 
 	// Determine provider
-	providerName := resolveString(current, config, "provider")
+	providerName := resolveStringConfigFirst(current, config, "provider")
 	var provider *OIDCProvider
 
 	if providerName != "" {
@@ -106,6 +106,19 @@ func resolveString(current, config map[string]any, key string) string {
 		return v
 	}
 	if v, ok := config[key].(string); ok && v != "" {
+		return v
+	}
+	return ""
+}
+
+// resolveStringConfigFirst checks config before current. Use for security-sensitive
+// keys like "provider" where the admin's YAML config must take precedence over
+// runtime/request data to prevent attacker-controlled overrides.
+func resolveStringConfigFirst(current, config map[string]any, key string) string {
+	if v, ok := config[key].(string); ok && v != "" {
+		return v
+	}
+	if v, ok := current[key].(string); ok && v != "" {
 		return v
 	}
 	return ""

@@ -8,9 +8,10 @@ import (
 
 // oidcModule implements sdk.ModuleInstance for the "sso.oidc" module type.
 type oidcModule struct {
-	name     string
-	config   map[string]any
-	registry *ProviderRegistry
+	name                string
+	config              map[string]any
+	registry            *ProviderRegistry
+	registeredProviders []string
 }
 
 func newOIDCModule(name string, config map[string]any, registry *ProviderRegistry) *oidcModule {
@@ -70,6 +71,7 @@ func (m *oidcModule) Init() error {
 			return fmt.Errorf("sso.oidc module %q: %w", m.name, err)
 		}
 		m.registry.Register(p)
+		m.registeredProviders = append(m.registeredProviders, p.ProviderName)
 		log.Printf("sso.oidc: registered provider %q (issuer: %s)", p.ProviderName, p.Issuer)
 	}
 
@@ -81,8 +83,8 @@ func (m *oidcModule) Start(_ context.Context) error {
 }
 
 func (m *oidcModule) Stop(_ context.Context) error {
-	for _, p := range m.registry.All() {
-		m.registry.Remove(p.ProviderName)
+	for _, name := range m.registeredProviders {
+		m.registry.Remove(name)
 	}
 	return nil
 }

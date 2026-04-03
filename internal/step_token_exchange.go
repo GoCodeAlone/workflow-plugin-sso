@@ -19,27 +19,40 @@ func newTokenExchangeStep(name string, config map[string]any, registry *Provider
 }
 
 func (s *tokenExchangeStep) Execute(ctx context.Context, triggerData map[string]any, stepOutputs map[string]map[string]any, current map[string]any, metadata map[string]any, config map[string]any) (*sdk.StepResult, error) {
-	providerName := resolveString(current, config, "provider")
+	providerName := resolveStringConfigFirst(current, config, "provider")
 	code := resolveString(current, config, "code")
 
 	if providerName == "" {
-		return nil, fmt.Errorf("step.sso_token_exchange: 'provider' is required")
+		return &sdk.StepResult{Output: map[string]any{
+			"success": false,
+			"error":   "step.sso_token_exchange: 'provider' is required",
+		}}, nil
 	}
 	if code == "" {
-		return nil, fmt.Errorf("step.sso_token_exchange: 'code' is required")
+		return &sdk.StepResult{Output: map[string]any{
+			"success": false,
+			"error":   "step.sso_token_exchange: 'code' is required",
+		}}, nil
 	}
 
 	provider, ok := s.registry.Get(providerName)
 	if !ok {
-		return nil, fmt.Errorf("step.sso_token_exchange: provider %q not found", providerName)
+		return &sdk.StepResult{Output: map[string]any{
+			"success": false,
+			"error":   fmt.Sprintf("step.sso_token_exchange: provider %q not found", providerName),
+		}}, nil
 	}
 
 	token, err := provider.OAuthCfg.Exchange(ctx, code)
 	if err != nil {
-		return nil, fmt.Errorf("step.sso_token_exchange: code exchange failed: %w", err)
+		return &sdk.StepResult{Output: map[string]any{
+			"success": false,
+			"error":   fmt.Sprintf("step.sso_token_exchange: code exchange failed: %v", err),
+		}}, nil
 	}
 
 	output := map[string]any{
+		"success":     true,
 		"accessToken": token.AccessToken,
 		"tokenType":   token.TokenType,
 		"expiresIn":   int(time.Until(token.Expiry).Seconds()),
