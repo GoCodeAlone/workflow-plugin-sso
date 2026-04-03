@@ -1,20 +1,25 @@
 {
-    "name": "workflow-plugin-TEMPLATE",
+    "name": "workflow-plugin-sso",
     "version": "0.1.0",
-    "description": "TEMPLATE plugin for the workflow engine",
+    "description": "Enterprise SSO via OpenID Connect (Entra ID, Okta, generic OIDC)",
     "author": "GoCodeAlone",
     "license": "MIT",
     "type": "external",
     "tier": "community",
     "private": false,
-    "minEngineVersion": "0.3.55",
-    "keywords": [],
-    "homepage": "https://github.com/GoCodeAlone/workflow-plugin-TEMPLATE",
-    "repository": "https://github.com/GoCodeAlone/workflow-plugin-TEMPLATE",
+    "minEngineVersion": "0.3.56",
+    "keywords": ["sso", "oidc", "openid-connect", "entra-id", "okta", "jwt", "authentication"],
+    "homepage": "https://github.com/GoCodeAlone/workflow-plugin-sso",
+    "repository": "https://github.com/GoCodeAlone/workflow-plugin-sso",
     "capabilities": {
         "configProvider": false,
-        "moduleTypes": [],
-        "stepTypes": [],
+        "moduleTypes": ["sso.oidc"],
+        "stepTypes": [
+            "step.sso_validate_token",
+            "step.sso_userinfo",
+            "step.sso_token_exchange",
+            "step.sso_refresh_token"
+        ],
         "triggerTypes": []
     }
 }

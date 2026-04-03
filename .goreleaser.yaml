@@ -5,9 +5,9 @@ before:
     - go mod tidy
 
 builds:
-  - id: workflow-plugin-TEMPLATE
-    main: ./cmd/workflow-plugin-TEMPLATE
-    binary: workflow-plugin-TEMPLATE
+  - id: workflow-plugin-sso
+    main: ./cmd/workflow-plugin-sso
+    binary: workflow-plugin-sso
     env:
       - CGO_ENABLED=0
     goos:
