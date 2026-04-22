@@ -6,6 +6,10 @@ import (
 	sdk "github.com/GoCodeAlone/workflow/plugin/external/sdk"
 )
 
+// Version is set at build time via -ldflags
+// "-X github.com/GoCodeAlone/workflow-plugin-sso/internal.Version=X.Y.Z"
+var Version = "dev"
+
 type ssoPlugin struct {
 	registry *ProviderRegistry
 }
@@ -19,7 +23,7 @@ func NewPlugin() *ssoPlugin {
 func (p *ssoPlugin) Manifest() sdk.PluginManifest {
 	return sdk.PluginManifest{
 		Name:        "workflow-plugin-sso",
-		Version:     "0.1.0",
+		Version:     Version,
 		Author:      "GoCodeAlone",
 		Description: "Enterprise SSO via OpenID Connect (Entra ID, Okta, generic OIDC)",
 	}
