@@ -1,0 +1,43 @@
+{
+  "version": "v1",
+  "contracts": [
+    {
+      "kind": "module",
+      "type": "sso.oidc",
+      "mode": "strict",
+      "config": "workflow.plugins.sso.v1.OIDCModuleConfig"
+    },
+    {
+      "kind": "step",
+      "type": "step.sso_validate_token",
+      "mode": "strict",
+      "config": "workflow.plugins.sso.v1.ValidateTokenConfig",
+      "input": "workflow.plugins.sso.v1.ValidateTokenInput",
+      "output": "workflow.plugins.sso.v1.ValidateTokenOutput"
+    },
+    {
+      "kind": "step",
+      "type": "step.sso_userinfo",
+      "mode": "strict",
+      "config": "workflow.plugins.sso.v1.UserInfoConfig",
+      "input": "workflow.plugins.sso.v1.UserInfoInput",
+      "output": "workflow.plugins.sso.v1.UserInfoOutput"
+    },
+    {
+      "kind": "step",
+      "type": "step.sso_token_exchange",
+      "mode": "strict",
+      "config": "workflow.plugins.sso.v1.TokenExchangeConfig",
+      "input": "workflow.plugins.sso.v1.TokenExchangeInput",
+      "output": "workflow.plugins.sso.v1.TokenExchangeOutput"
+    },
+    {
+      "kind": "step",
+      "type": "step.sso_refresh_token",
+      "mode": "strict",
+      "config": "workflow.plugins.sso.v1.RefreshTokenConfig",
+      "input": "workflow.plugins.sso.v1.RefreshTokenInput",
+      "output": "workflow.plugins.sso.v1.RefreshTokenOutput"
+    }
+  ]
+}
