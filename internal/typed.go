@@ -10,9 +10,10 @@ import (
 
 func typedValidateToken(registry *ProviderRegistry) sdk.TypedStepHandler[*contracts.ValidateTokenConfig, *contracts.ValidateTokenInput, *contracts.ValidateTokenOutput] {
 	return func(ctx context.Context, req sdk.TypedStepRequest[*contracts.ValidateTokenConfig, *contracts.ValidateTokenInput]) (*sdk.TypedStepResult[*contracts.ValidateTokenOutput], error) {
-		config := mergeMaps(validateTokenInputToMap(req.Input), validateTokenConfigToMap(req.Config))
+		config := validateTokenConfigToMap(req.Config)
+		current := mergeMaps(req.Current, validateTokenInputToMap(req.Input))
 		step := newValidateTokenStep("", nil, registry)
-		result, err := step.Execute(ctx, req.TriggerData, req.StepOutputs, req.Current, req.Metadata, config)
+		result, err := step.Execute(ctx, req.TriggerData, req.StepOutputs, current, req.Metadata, config)
 		if err != nil {
 			return nil, err
 		}
@@ -22,9 +23,10 @@ func typedValidateToken(registry *ProviderRegistry) sdk.TypedStepHandler[*contra
 
 func typedUserInfo(registry *ProviderRegistry) sdk.TypedStepHandler[*contracts.UserInfoConfig, *contracts.UserInfoInput, *contracts.UserInfoOutput] {
 	return func(ctx context.Context, req sdk.TypedStepRequest[*contracts.UserInfoConfig, *contracts.UserInfoInput]) (*sdk.TypedStepResult[*contracts.UserInfoOutput], error) {
-		config := mergeMaps(userInfoInputToMap(req.Input), userInfoConfigToMap(req.Config))
+		config := userInfoConfigToMap(req.Config)
+		current := mergeMaps(req.Current, userInfoInputToMap(req.Input))
 		step := newUserInfoStep("", nil, registry)
-		result, err := step.Execute(ctx, req.TriggerData, req.StepOutputs, req.Current, req.Metadata, config)
+		result, err := step.Execute(ctx, req.TriggerData, req.StepOutputs, current, req.Metadata, config)
 		if err != nil {
 			return nil, err
 		}
@@ -34,9 +36,10 @@ func typedUserInfo(registry *ProviderRegistry) sdk.TypedStepHandler[*contracts.U
 
 func typedTokenExchange(registry *ProviderRegistry) sdk.TypedStepHandler[*contracts.TokenExchangeConfig, *contracts.TokenExchangeInput, *contracts.TokenExchangeOutput] {
 	return func(ctx context.Context, req sdk.TypedStepRequest[*contracts.TokenExchangeConfig, *contracts.TokenExchangeInput]) (*sdk.TypedStepResult[*contracts.TokenExchangeOutput], error) {
-		config := mergeMaps(tokenExchangeInputToMap(req.Input), tokenExchangeConfigToMap(req.Config))
+		config := tokenExchangeConfigToMap(req.Config)
+		current := mergeMaps(req.Current, tokenExchangeInputToMap(req.Input))
 		step := newTokenExchangeStep("", nil, registry)
-		result, err := step.Execute(ctx, req.TriggerData, req.StepOutputs, req.Current, req.Metadata, config)
+		result, err := step.Execute(ctx, req.TriggerData, req.StepOutputs, current, req.Metadata, config)
 		if err != nil {
 			return nil, err
 		}
@@ -46,9 +49,10 @@ func typedTokenExchange(registry *ProviderRegistry) sdk.TypedStepHandler[*contra
 
 func typedRefreshToken(registry *ProviderRegistry) sdk.TypedStepHandler[*contracts.RefreshTokenConfig, *contracts.RefreshTokenInput, *contracts.RefreshTokenOutput] {
 	return func(ctx context.Context, req sdk.TypedStepRequest[*contracts.RefreshTokenConfig, *contracts.RefreshTokenInput]) (*sdk.TypedStepResult[*contracts.RefreshTokenOutput], error) {
-		config := mergeMaps(refreshTokenInputToMap(req.Input), refreshTokenConfigToMap(req.Config))
+		config := refreshTokenConfigToMap(req.Config)
+		current := mergeMaps(req.Current, refreshTokenInputToMap(req.Input))
 		step := newRefreshTokenStep("", nil, registry)
-		result, err := step.Execute(ctx, req.TriggerData, req.StepOutputs, req.Current, req.Metadata, config)
+		result, err := step.Execute(ctx, req.TriggerData, req.StepOutputs, current, req.Metadata, config)
 		if err != nil {
 			return nil, err
 		}
