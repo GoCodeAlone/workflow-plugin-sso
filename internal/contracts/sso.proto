@@ -1,0 +1,109 @@
+syntax = "proto3";
+
+package workflow.plugins.sso.v1;
+
+option go_package = "github.com/GoCodeAlone/workflow-plugin-sso/internal/contracts";
+
+import "google/protobuf/struct.proto";
+
+message OIDCModuleConfig {
+  repeated ProviderConfig providers = 1;
+}
+
+message ProviderConfig {
+  string name = 1;
+  string type = 2;
+  string issuer = 3;
+  string client_id = 4;
+  string client_secret = 5;
+  string redirect_url = 6;
+  string tenant_id = 7;
+  string domain = 8;
+  string auth_server_id = 9;
+  repeated string scopes = 10;
+  ClaimMapping claim_mapping = 11;
+}
+
+message ClaimMapping {
+  string roles = 1;
+  string groups = 2;
+  string email = 3;
+  string name = 4;
+}
+
+message ValidateTokenConfig {
+  string provider = 1;
+}
+
+message ValidateTokenInput {
+  string token = 1;
+  string authorization = 2;
+  string provider = 3;
+}
+
+message ValidateTokenOutput {
+  bool valid = 1;
+  string user_id = 2;
+  string email = 3;
+  string name = 4;
+  repeated string roles = 5;
+  repeated string groups = 6;
+  string provider = 7;
+  google.protobuf.Struct claims = 8;
+  string expires_at = 9;
+  string error = 10;
+}
+
+message UserInfoConfig {
+  string provider = 1;
+}
+
+message UserInfoInput {
+  string access_token = 1;
+  string provider = 2;
+}
+
+message UserInfoOutput {
+  bool success = 1;
+  string sub = 2;
+  string email = 3;
+  string profile = 4;
+  google.protobuf.Struct claims = 5;
+  string error = 6;
+}
+
+message TokenExchangeConfig {
+  string provider = 1;
+}
+
+message TokenExchangeInput {
+  string code = 1;
+  string provider = 2;
+}
+
+message TokenExchangeOutput {
+  bool success = 1;
+  string access_token = 2;
+  string refresh_token = 3;
+  string id_token = 4;
+  string token_type = 5;
+  int32 expires_in = 6;
+  string error = 7;
+}
+
+message RefreshTokenConfig {
+  string provider = 1;
+}
+
+message RefreshTokenInput {
+  string refresh_token = 1;
+  string provider = 2;
+}
+
+message RefreshTokenOutput {
+  bool success = 1;
+  string access_token = 2;
+  string refresh_token = 3;
+  int32 expires_in = 4;
+  string error = 5;
+}

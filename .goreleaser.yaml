@@ -2,8 +2,8 @@ version: 2
 
 before:
   hooks:
-    - go mod tidy
-    - "sed -i.bak 's/\"version\": \".*\"/\"version\": \"{{ .Version }}\"/' plugin.json && rm -f plugin.json.bak"
+    - GOWORK=off go mod tidy
+    - "sed -i.bak -e 's/\"version\": \".*\"/\"version\": \"{{ .Version }}\"/' -e 's#/releases/download/v[^/]*/#/releases/download/v{{ .Version }}/#g' plugin.json && rm -f plugin.json.bak"
 
 builds:
   - id: workflow-plugin-sso
@@ -11,6 +11,7 @@ builds:
     binary: workflow-plugin-sso
     env:
       - CGO_ENABLED=0
+      - GOWORK=off
     goos:
       - linux
       - darwin
@@ -26,6 +27,7 @@ archives:
     name_template: "{{ .ProjectName }}-{{ .Os }}-{{ .Arch }}"
     files:
       - plugin.json
+      - plugin.contracts.json
       - LICENSE
 
 checksum:
