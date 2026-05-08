@@ -36,3 +36,6 @@ checksum:
 
 changelog:
   sort: asc
+
+release:
+  draft: true
