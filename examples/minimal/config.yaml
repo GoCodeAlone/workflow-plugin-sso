@@ -1,0 +1,13 @@
+# Minimal config exercising workflow-plugin-sso.
+# Schema-validate with: wfctl validate --skip-unknown-types examples/minimal/config.yaml
+version: 1
+modules:
+  - name: sso-provider
+    type: sso.oidc
+    config: {}
+workflows:
+  pipeline:
+    steps:
+      - name: example
+        type: step.sso_validate_token
+        config: {}
