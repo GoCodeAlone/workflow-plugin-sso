@@ -3,7 +3,7 @@ module github.com/GoCodeAlone/workflow-plugin-sso
 go 1.26.0
 
 require (
-	github.com/GoCodeAlone/workflow v0.62.0
+	github.com/GoCodeAlone/workflow v0.64.0
 	github.com/coreos/go-oidc/v3 v3.12.0
 	golang.org/x/oauth2 v0.36.0
 	google.golang.org/protobuf v1.36.12-0.20260120151049-f2248ac996af
