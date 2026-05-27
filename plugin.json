@@ -50,7 +50,8 @@
             "step.sso_validate_token",
             "step.sso_userinfo",
             "step.sso_token_exchange",
-            "step.sso_refresh_token"
+            "step.sso_refresh_token",
+            "step.sso_auth_provider_describe"
         ],
         "triggerTypes": []
     }

@@ -10,10 +10,11 @@ import (
 type stepConstructor func(name string, config map[string]any, registry *ProviderRegistry) sdk.StepInstance
 
 var stepRegistry = map[string]stepConstructor{
-	"step.sso_validate_token": newValidateTokenStep,
-	"step.sso_userinfo":       newUserInfoStep,
-	"step.sso_token_exchange":  newTokenExchangeStep,
-	"step.sso_refresh_token":   newRefreshTokenStep,
+	"step.sso_validate_token":         newValidateTokenStep,
+	"step.sso_userinfo":               newUserInfoStep,
+	"step.sso_token_exchange":         newTokenExchangeStep,
+	"step.sso_refresh_token":          newRefreshTokenStep,
+	"step.sso_auth_provider_describe": newAuthProviderDescribeStep,
 }
 
 func allStepTypes() []string {

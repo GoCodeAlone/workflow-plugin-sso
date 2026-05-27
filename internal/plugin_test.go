@@ -199,10 +199,11 @@ func TestStepTypes(t *testing.T) {
 	p := internal.NewPlugin()
 	types := p.StepTypes()
 	expected := map[string]bool{
-		"step.sso_validate_token": true,
-		"step.sso_userinfo":       true,
-		"step.sso_token_exchange": true,
-		"step.sso_refresh_token":  true,
+		"step.sso_validate_token":         true,
+		"step.sso_userinfo":               true,
+		"step.sso_token_exchange":         true,
+		"step.sso_refresh_token":          true,
+		"step.sso_auth_provider_describe": true,
 	}
 	if len(types) != len(expected) {
 		t.Fatalf("expected %d step types, got %d: %v", len(expected), len(types), types)

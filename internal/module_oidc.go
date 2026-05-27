@@ -60,6 +60,14 @@ func (m *oidcModule) Init() error {
 			if cfg.ClaimMapping.Groups == "" {
 				cfg.ClaimMapping.Groups = "groups"
 			}
+		case "auth0":
+			cfg.Issuer = Auth0Issuer(cfg.Domain)
+			if cfg.ClaimMapping.Email == "" {
+				cfg.ClaimMapping.Email = Auth0DefaultClaimMapping().Email
+			}
+			if cfg.ClaimMapping.Name == "" {
+				cfg.ClaimMapping.Name = Auth0DefaultClaimMapping().Name
+			}
 		case "generic", "":
 			// issuer must be set directly
 		default:
