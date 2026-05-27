@@ -38,6 +38,14 @@
       "config": "workflow.plugins.sso.v1.RefreshTokenConfig",
       "input": "workflow.plugins.sso.v1.RefreshTokenInput",
       "output": "workflow.plugins.sso.v1.RefreshTokenOutput"
+    },
+    {
+      "kind": "step",
+      "type": "step.sso_auth_provider_describe",
+      "mode": "strict",
+      "config": "workflow.plugins.sso.v1.AuthProviderDescribeConfig",
+      "input": "workflow.plugins.sso.v1.AuthProviderDescribeInput",
+      "output": "workflow.plugins.sso.v1.AuthProviderDescribeOutput"
     }
   ]
 }

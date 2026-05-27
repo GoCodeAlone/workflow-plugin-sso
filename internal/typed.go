@@ -60,12 +60,62 @@ func typedRefreshToken(registry *ProviderRegistry) sdk.TypedStepHandler[*contrac
 	}
 }
 
+func typedAuthProviderDescribe(registry *ProviderRegistry) sdk.TypedStepHandler[*contracts.AuthProviderDescribeConfig, *contracts.AuthProviderDescribeInput, *contracts.AuthProviderDescribeOutput] {
+	return func(ctx context.Context, req sdk.TypedStepRequest[*contracts.AuthProviderDescribeConfig, *contracts.AuthProviderDescribeInput]) (*sdk.TypedStepResult[*contracts.AuthProviderDescribeOutput], error) {
+		config := authProviderDescribeConfigToMap(req.Config)
+		current := mergeMaps(req.Current, authProviderDescribeInputToMap(req.Input))
+		step := newAuthProviderDescribeStep("", config, registry)
+		result, err := step.Execute(ctx, req.TriggerData, req.StepOutputs, current, req.Metadata, nil)
+		if err != nil {
+			return nil, err
+		}
+		return &sdk.TypedStepResult[*contracts.AuthProviderDescribeOutput]{Output: authProviderDescribeOutputFromMap(result.Output), StopPipeline: result.StopPipeline}, nil
+	}
+}
+
 func mergeMaps(maps ...map[string]any) map[string]any {
 	out := map[string]any{}
 	for _, values := range maps {
 		for key, value := range values {
 			out[key] = value
 		}
+	}
+	return out
+}
+
+func authProviderDescribeConfigToMap(cfg *contracts.AuthProviderDescribeConfig) map[string]any {
+	if cfg == nil {
+		return nil
+	}
+	return map[string]any{"providers": providerConfigsToAny(cfg.GetProviders())}
+}
+
+func authProviderDescribeInputToMap(input *contracts.AuthProviderDescribeInput) map[string]any {
+	if input == nil {
+		return nil
+	}
+	return map[string]any{"providers": providerConfigsToAny(input.GetProviders())}
+}
+
+func providerConfigsToAny(providers []*contracts.ProviderConfig) []any {
+	out := make([]any, 0, len(providers))
+	for _, provider := range providers {
+		if provider == nil {
+			continue
+		}
+		item := compactMap(map[string]any{
+			"name":         provider.GetName(),
+			"type":         provider.GetType(),
+			"issuer":       provider.GetIssuer(),
+			"clientId":     provider.GetClientId(),
+			"clientSecret": provider.GetClientSecret(),
+			"redirectUrl":  provider.GetRedirectUrl(),
+			"tenantId":     provider.GetTenantId(),
+			"domain":       provider.GetDomain(),
+			"authServerId": provider.GetAuthServerId(),
+			"scopes":       stringsToAny(provider.GetScopes()),
+		})
+		out = append(out, item)
 	}
 	return out
 }
@@ -206,6 +256,72 @@ func refreshTokenOutputFromMap(values map[string]any) *contracts.RefreshTokenOut
 		ExpiresIn:    int32Value(values["expiresIn"]),
 		Error:        stringValue(values["error"]),
 	}
+}
+
+func authProviderDescribeOutputFromMap(values map[string]any) *contracts.AuthProviderDescribeOutput {
+	output := &contracts.AuthProviderDescribeOutput{Error: stringValue(values["error"])}
+	for _, providerMap := range mapSliceValue(values["providers"]) {
+		output.Providers = append(output.Providers, authProviderDescriptorFromMap(providerMap))
+	}
+	return output
+}
+
+func authProviderDescriptorFromMap(values map[string]any) *contracts.AuthProviderDescriptor {
+	descriptor := &contracts.AuthProviderDescriptor{
+		Id:             stringValue(values["id"]),
+		Label:          stringValue(values["label"]),
+		Description:    stringValue(values["description"]),
+		Categories:     stringSliceValue(values["categories"]),
+		Implementation: stringValue(values["implementation"]),
+		Version:        stringValue(values["version"]),
+		DocsUrl:        stringValue(values["docs_url"]),
+		SupportLevel:   stringValue(values["support_level"]),
+		DisabledReason: stringValue(values["disabled_reason"]),
+	}
+	for _, capabilityMap := range mapSliceValue(values["capabilities"]) {
+		descriptor.Capabilities = append(descriptor.Capabilities, authProviderCapabilityFromMap(capabilityMap))
+	}
+	return descriptor
+}
+
+func authProviderCapabilityFromMap(values map[string]any) *contracts.AuthProviderCapability {
+	capability := &contracts.AuthProviderCapability{
+		Key:              stringValue(values["key"]),
+		Label:            stringValue(values["label"]),
+		Category:         stringValue(values["category"]),
+		Description:      stringValue(values["description"]),
+		Supported:        boolValue(values["supported"]),
+		DisabledReason:   stringValue(values["disabled_reason"]),
+		AppScopes:        stringSliceValue(values["app_scopes"]),
+		AdminReadScopes:  stringSliceValue(values["admin_read_scopes"]),
+		AdminWriteScopes: stringSliceValue(values["admin_write_scopes"]),
+	}
+	for _, fieldMap := range mapSliceValue(values["config_fields"]) {
+		capability.ConfigFields = append(capability.ConfigFields, authProviderConfigFieldFromMap(fieldMap))
+	}
+	return capability
+}
+
+func authProviderConfigFieldFromMap(values map[string]any) *contracts.AuthProviderConfigField {
+	field := &contracts.AuthProviderConfigField{
+		Key:               stringValue(values["key"]),
+		Label:             stringValue(values["label"]),
+		Description:       stringValue(values["description"]),
+		HelpText:          stringValue(values["help_text"]),
+		InputType:         stringValue(values["input_type"]),
+		Secret:            boolValue(values["secret"]),
+		Required:          boolValue(values["required"]),
+		Lookup:            stringValue(values["lookup"]),
+		ValidationPattern: stringValue(values["validation_pattern"]),
+	}
+	for _, optionMap := range mapSliceValue(values["options"]) {
+		field.Options = append(field.Options, &contracts.AuthProviderConfigOption{
+			Value:       stringValue(optionMap["value"]),
+			Label:       stringValue(optionMap["label"]),
+			Description: stringValue(optionMap["description"]),
+		})
+	}
+	return field
 }
 
 func compactMap(values map[string]any) map[string]any {

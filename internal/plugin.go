@@ -86,6 +86,9 @@ func (p *ssoPlugin) CreateTypedStep(typeName, name string, config *anypb.Any) (s
 	case "step.sso_refresh_token":
 		factory := sdk.NewTypedStepFactory(typeName, &contracts.RefreshTokenConfig{}, &contracts.RefreshTokenInput{}, typedRefreshToken(p.registry))
 		return factory.CreateTypedStep(typeName, name, config)
+	case "step.sso_auth_provider_describe":
+		factory := sdk.NewTypedStepFactory(typeName, &contracts.AuthProviderDescribeConfig{}, &contracts.AuthProviderDescribeInput{}, typedAuthProviderDescribe(p.registry))
+		return factory.CreateTypedStep(typeName, name, config)
 	default:
 		return nil, fmt.Errorf("unknown typed step type: %s", typeName)
 	}
@@ -108,6 +111,7 @@ var ssoContractRegistry = &pb.ContractRegistry{
 		stepContract("step.sso_userinfo", "UserInfoConfig", "UserInfoInput", "UserInfoOutput"),
 		stepContract("step.sso_token_exchange", "TokenExchangeConfig", "TokenExchangeInput", "TokenExchangeOutput"),
 		stepContract("step.sso_refresh_token", "RefreshTokenConfig", "RefreshTokenInput", "RefreshTokenOutput"),
+		stepContract("step.sso_auth_provider_describe", "AuthProviderDescribeConfig", "AuthProviderDescribeInput", "AuthProviderDescribeOutput"),
 	},
 }
 
