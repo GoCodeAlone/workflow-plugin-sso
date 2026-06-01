@@ -1,6 +1,6 @@
 {
     "name": "workflow-plugin-sso",
-    "version": "0.1.6",
+    "version": "0.0.0",
     "description": "Enterprise SSO via OpenID Connect (Entra ID, Okta, generic OIDC)",
     "author": "GoCodeAlone",
     "license": "MIT",
