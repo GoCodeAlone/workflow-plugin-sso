@@ -67,20 +67,23 @@ func (x *OIDCModuleConfig) GetProviders() []*ProviderConfig {
 }
 
 type ProviderConfig struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Type          string                 `protobuf:"bytes,2,opt,name=type,proto3" json:"type,omitempty"`
-	Issuer        string                 `protobuf:"bytes,3,opt,name=issuer,proto3" json:"issuer,omitempty"`
-	ClientId      string                 `protobuf:"bytes,4,opt,name=client_id,json=clientId,proto3" json:"client_id,omitempty"`
-	ClientSecret  string                 `protobuf:"bytes,5,opt,name=client_secret,json=clientSecret,proto3" json:"client_secret,omitempty"`
-	RedirectUrl   string                 `protobuf:"bytes,6,opt,name=redirect_url,json=redirectUrl,proto3" json:"redirect_url,omitempty"`
-	TenantId      string                 `protobuf:"bytes,7,opt,name=tenant_id,json=tenantId,proto3" json:"tenant_id,omitempty"`
-	Domain        string                 `protobuf:"bytes,8,opt,name=domain,proto3" json:"domain,omitempty"`
-	AuthServerId  string                 `protobuf:"bytes,9,opt,name=auth_server_id,json=authServerId,proto3" json:"auth_server_id,omitempty"`
-	Scopes        []string               `protobuf:"bytes,10,rep,name=scopes,proto3" json:"scopes,omitempty"`
-	ClaimMapping  *ClaimMapping          `protobuf:"bytes,11,opt,name=claim_mapping,json=claimMapping,proto3" json:"claim_mapping,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state        protoimpl.MessageState `protogen:"open.v1"`
+	Name         string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Type         string                 `protobuf:"bytes,2,opt,name=type,proto3" json:"type,omitempty"`
+	Issuer       string                 `protobuf:"bytes,3,opt,name=issuer,proto3" json:"issuer,omitempty"`
+	ClientId     string                 `protobuf:"bytes,4,opt,name=client_id,json=clientId,proto3" json:"client_id,omitempty"`
+	ClientSecret string                 `protobuf:"bytes,5,opt,name=client_secret,json=clientSecret,proto3" json:"client_secret,omitempty"`
+	RedirectUrl  string                 `protobuf:"bytes,6,opt,name=redirect_url,json=redirectUrl,proto3" json:"redirect_url,omitempty"`
+	TenantId     string                 `protobuf:"bytes,7,opt,name=tenant_id,json=tenantId,proto3" json:"tenant_id,omitempty"`
+	Domain       string                 `protobuf:"bytes,8,opt,name=domain,proto3" json:"domain,omitempty"`
+	AuthServerId string                 `protobuf:"bytes,9,opt,name=auth_server_id,json=authServerId,proto3" json:"auth_server_id,omitempty"`
+	Scopes       []string               `protobuf:"bytes,10,rep,name=scopes,proto3" json:"scopes,omitempty"`
+	ClaimMapping *ClaimMapping          `protobuf:"bytes,11,opt,name=claim_mapping,json=claimMapping,proto3" json:"claim_mapping,omitempty"`
+	// JWKS-URI verify-only mode (cross-service asymmetric auth, no OIDC discovery).
+	JwksUri           string   `protobuf:"bytes,12,opt,name=jwks_uri,json=jwksUri,proto3" json:"jwks_uri,omitempty"`
+	SigningAlgorithms []string `protobuf:"bytes,13,rep,name=signing_algorithms,json=signingAlgorithms,proto3" json:"signing_algorithms,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *ProviderConfig) Reset() {
@@ -186,6 +189,20 @@ func (x *ProviderConfig) GetScopes() []string {
 func (x *ProviderConfig) GetClaimMapping() *ClaimMapping {
 	if x != nil {
 		return x.ClaimMapping
+	}
+	return nil
+}
+
+func (x *ProviderConfig) GetJwksUri() string {
+	if x != nil {
+		return x.JwksUri
+	}
+	return ""
+}
+
+func (x *ProviderConfig) GetSigningAlgorithms() []string {
+	if x != nil {
+		return x.SigningAlgorithms
 	}
 	return nil
 }
@@ -1572,7 +1589,7 @@ const file_internal_contracts_sso_proto_rawDesc = "" +
 	"\n" +
 	"\x1cinternal/contracts/sso.proto\x12\x17workflow.plugins.sso.v1\x1a\x1cgoogle/protobuf/struct.proto\"Y\n" +
 	"\x10OIDCModuleConfig\x12E\n" +
-	"\tproviders\x18\x01 \x03(\v2'.workflow.plugins.sso.v1.ProviderConfigR\tproviders\"\xf4\x02\n" +
+	"\tproviders\x18\x01 \x03(\v2'.workflow.plugins.sso.v1.ProviderConfigR\tproviders\"\xbe\x03\n" +
 	"\x0eProviderConfig\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x12\n" +
 	"\x04type\x18\x02 \x01(\tR\x04type\x12\x16\n" +
@@ -1585,7 +1602,9 @@ const file_internal_contracts_sso_proto_rawDesc = "" +
 	"\x0eauth_server_id\x18\t \x01(\tR\fauthServerId\x12\x16\n" +
 	"\x06scopes\x18\n" +
 	" \x03(\tR\x06scopes\x12J\n" +
-	"\rclaim_mapping\x18\v \x01(\v2%.workflow.plugins.sso.v1.ClaimMappingR\fclaimMapping\"f\n" +
+	"\rclaim_mapping\x18\v \x01(\v2%.workflow.plugins.sso.v1.ClaimMappingR\fclaimMapping\x12\x19\n" +
+	"\bjwks_uri\x18\f \x01(\tR\ajwksUri\x12-\n" +
+	"\x12signing_algorithms\x18\r \x03(\tR\x11signingAlgorithms\"f\n" +
 	"\fClaimMapping\x12\x14\n" +
 	"\x05roles\x18\x01 \x01(\tR\x05roles\x12\x16\n" +
 	"\x06groups\x18\x02 \x01(\tR\x06groups\x12\x14\n" +
