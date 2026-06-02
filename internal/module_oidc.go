@@ -99,15 +99,17 @@ func (m *oidcModule) Stop(_ context.Context) error {
 
 func parseProviderConfig(raw map[string]any) ProviderConfig {
 	cfg := ProviderConfig{
-		Name:         getString(raw, "name"),
-		Type:         getString(raw, "type"),
-		Issuer:       getString(raw, "issuer"),
-		ClientID:     getString(raw, "clientId"),
-		ClientSecret: getString(raw, "clientSecret"),
-		RedirectURL:  getString(raw, "redirectUrl"),
-		TenantID:     getString(raw, "tenantId"),
-		Domain:       getString(raw, "domain"),
-		AuthServerID: getString(raw, "authServerId"),
+		Name:              getString(raw, "name"),
+		Type:              getString(raw, "type"),
+		Issuer:            getString(raw, "issuer"),
+		ClientID:          getString(raw, "clientId"),
+		ClientSecret:      getString(raw, "clientSecret"),
+		RedirectURL:       getString(raw, "redirectUrl"),
+		TenantID:          getString(raw, "tenantId"),
+		Domain:            getString(raw, "domain"),
+		AuthServerID:      getString(raw, "authServerId"),
+		JWKSURI:           getString(raw, "jwksUri"),
+		SigningAlgorithms: getStringSlice(raw, "signingAlgorithms"),
 	}
 
 	if scopes, ok := raw["scopes"].([]any); ok {
@@ -135,4 +137,27 @@ func getString(m map[string]any, key string) string {
 		return v
 	}
 	return ""
+}
+
+// getStringSlice extracts a []string from a raw config map. It handles both
+// []any (YAML-unmarshalled) and []string values. Distinct from getStringSliceClaim,
+// which navigates nested claim paths on parsed JWT claims.
+func getStringSlice(m map[string]any, key string) []string {
+	v, ok := m[key]
+	if !ok || v == nil {
+		return nil
+	}
+	switch typed := v.(type) {
+	case []string:
+		return typed
+	case []any:
+		out := make([]string, 0, len(typed))
+		for _, item := range typed {
+			if s, ok := item.(string); ok {
+				out = append(out, s)
+			}
+		}
+		return out
+	}
+	return nil
 }

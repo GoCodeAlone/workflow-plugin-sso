@@ -89,12 +89,66 @@ func (r *ProviderRegistry) All() []*OIDCProvider {
 }
 
 // InitProvider discovers OIDC endpoints and creates a verifier for a single provider config.
+//
+// When cfg.JWKSURI is non-empty the function operates in JWKS-URI verify-only mode:
+// it skips OIDC discovery entirely and builds an IDTokenVerifier directly from the
+// remote JWKS endpoint (oidc.NewRemoteKeySet + oidc.NewVerifier). This is the
+// correct approach for cross-service asymmetric JWT verification where the issuer
+// (e.g. auth.m2m) publishes a /oauth/jwks endpoint but does not implement OIDC
+// discovery. The discovery-backed path (JWKSURI=="") is left unchanged.
 func InitProvider(ctx context.Context, cfg ProviderConfig) (*OIDCProvider, error) {
 	issuer := cfg.Issuer
 	if issuer == "" {
 		return nil, fmt.Errorf("provider %q: issuer is required", cfg.Name)
 	}
 
+	// --- JWKS-URI verify-only mode (no discovery) ---
+	if cfg.JWKSURI != "" {
+		keySet := oidc.NewRemoteKeySet(ctx, cfg.JWKSURI)
+
+		algs := cfg.SigningAlgorithms
+		if len(algs) == 0 {
+			// CRITICAL (cycle-2 F1): go-oidc v3 NewVerifier defaults SupportedSigningAlgs
+			// to RS256-only when the slice is empty (verify.go:317). That would silently
+			// reject ES256 tokens from auth.m2m at runtime. Default to both.
+			algs = []string{"ES256", "RS256"}
+		}
+
+		verifier := oidc.NewVerifier(issuer, keySet, &oidc.Config{
+			ClientID:             cfg.ClientID,
+			SkipClientIDCheck:    cfg.ClientID == "",
+			SupportedSigningAlgs: algs,
+		})
+
+		scopes := cfg.Scopes
+		if len(scopes) == 0 {
+			scopes = []string{oidc.ScopeOpenID, "profile", "email"}
+		}
+
+		claimMap := cfg.ClaimMapping
+		if claimMap.Email == "" {
+			claimMap.Email = "email"
+		}
+		if claimMap.Name == "" {
+			claimMap.Name = "name"
+		}
+
+		return &OIDCProvider{
+			ProviderName: cfg.Name,
+			Issuer:       issuer,
+			Verifier:     verifier,
+			// Provider field intentionally nil: discovery was skipped; callers that need
+			// OAuth exchange endpoints (login/refresh) must use the discovery path.
+			OAuthCfg: &oauth2.Config{
+				ClientID:     cfg.ClientID,
+				ClientSecret: cfg.ClientSecret,
+				Scopes:       scopes,
+			},
+			ClaimPaths: claimMap,
+		}, nil
+	}
+
+	// --- Standard OIDC discovery path (JWKSURI == "") ---
 	oidcProvider, err := oidc.NewProvider(ctx, issuer)
 	if err != nil {
 		return nil, fmt.Errorf("provider %q: OIDC discovery failed for %s: %w", cfg.Name, issuer, err)
@@ -151,6 +205,14 @@ type ProviderConfig struct {
 	// Okta-specific
 	Domain       string
 	AuthServerID string
+
+	// JWKS-URI verify-only mode (cross-service / no OIDC discovery).
+	// When JWKSURI is set, InitProvider skips OIDC discovery and builds a
+	// verifier directly from the remote JWKS. SigningAlgorithms defaults to
+	// ["ES256","RS256"] when empty (go-oidc v3 NewVerifier defaults to RS256-only,
+	// which would reject ES256 tokens at runtime — cycle-2 F1).
+	JWKSURI           string
+	SigningAlgorithms []string
 }
 
 // ExtractClaims extracts mapped identity fields from raw OIDC claims.
