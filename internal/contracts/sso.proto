@@ -22,6 +22,9 @@ message ProviderConfig {
   string auth_server_id = 9;
   repeated string scopes = 10;
   ClaimMapping claim_mapping = 11;
+  // JWKS-URI verify-only mode (cross-service asymmetric auth, no OIDC discovery).
+  string jwks_uri = 12;
+  repeated string signing_algorithms = 13;
 }
 
 message ClaimMapping {

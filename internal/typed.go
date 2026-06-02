@@ -104,16 +104,18 @@ func providerConfigsToAny(providers []*contracts.ProviderConfig) []any {
 			continue
 		}
 		item := compactMap(map[string]any{
-			"name":         provider.GetName(),
-			"type":         provider.GetType(),
-			"issuer":       provider.GetIssuer(),
-			"clientId":     provider.GetClientId(),
-			"clientSecret": provider.GetClientSecret(),
-			"redirectUrl":  provider.GetRedirectUrl(),
-			"tenantId":     provider.GetTenantId(),
-			"domain":       provider.GetDomain(),
-			"authServerId": provider.GetAuthServerId(),
-			"scopes":       stringsToAny(provider.GetScopes()),
+			"name":              provider.GetName(),
+			"type":              provider.GetType(),
+			"issuer":            provider.GetIssuer(),
+			"clientId":          provider.GetClientId(),
+			"clientSecret":      provider.GetClientSecret(),
+			"redirectUrl":       provider.GetRedirectUrl(),
+			"tenantId":          provider.GetTenantId(),
+			"domain":            provider.GetDomain(),
+			"authServerId":      provider.GetAuthServerId(),
+			"scopes":            stringsToAny(provider.GetScopes()),
+			"jwksUri":           provider.GetJwksUri(),
+			"signingAlgorithms": stringsToAny(provider.GetSigningAlgorithms()),
 		})
 		out = append(out, item)
 	}
@@ -130,16 +132,18 @@ func oidcModuleConfigToMap(cfg *contracts.OIDCModuleConfig) map[string]any {
 			continue
 		}
 		item := compactMap(map[string]any{
-			"name":         provider.GetName(),
-			"type":         provider.GetType(),
-			"issuer":       provider.GetIssuer(),
-			"clientId":     provider.GetClientId(),
-			"clientSecret": provider.GetClientSecret(),
-			"redirectUrl":  provider.GetRedirectUrl(),
-			"tenantId":     provider.GetTenantId(),
-			"domain":       provider.GetDomain(),
-			"authServerId": provider.GetAuthServerId(),
-			"scopes":       stringsToAny(provider.GetScopes()),
+			"name":              provider.GetName(),
+			"type":              provider.GetType(),
+			"issuer":            provider.GetIssuer(),
+			"clientId":          provider.GetClientId(),
+			"clientSecret":      provider.GetClientSecret(),
+			"redirectUrl":       provider.GetRedirectUrl(),
+			"tenantId":          provider.GetTenantId(),
+			"domain":            provider.GetDomain(),
+			"authServerId":      provider.GetAuthServerId(),
+			"scopes":            stringsToAny(provider.GetScopes()),
+			"jwksUri":           provider.GetJwksUri(),
+			"signingAlgorithms": stringsToAny(provider.GetSigningAlgorithms()),
 		})
 		if provider.GetClaimMapping() != nil {
 			item["claimMapping"] = compactMap(map[string]any{
