@@ -43,6 +43,13 @@ func (s *userInfoStep) Execute(ctx context.Context, triggerData map[string]any, 
 		}}, nil
 	}
 
+	if provider.Provider == nil {
+		return &sdk.StepResult{Output: map[string]any{
+			"success": false,
+			"error":   fmt.Sprintf("step.sso_userinfo: provider %q is verify-only (jwksUri mode); userinfo requires an OIDC-discovery provider", providerName),
+		}}, nil
+	}
+
 	tokenSource := oauth2.StaticTokenSource(&oauth2.Token{
 		AccessToken: accessToken,
 	})
