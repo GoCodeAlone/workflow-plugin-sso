@@ -44,6 +44,13 @@ func (s *refreshTokenStep) Execute(ctx context.Context, triggerData map[string]a
 		}}, nil
 	}
 
+	if provider.OAuthCfg == nil || provider.OAuthCfg.Endpoint.TokenURL == "" {
+		return &sdk.StepResult{Output: map[string]any{
+			"success": false,
+			"error":   fmt.Sprintf("step.sso_refresh_token: provider %q is verify-only (jwksUri mode); token refresh requires an OIDC-discovery provider", providerName),
+		}}, nil
+	}
+
 	oldToken := &oauth2.Token{
 		RefreshToken: refreshToken,
 	}

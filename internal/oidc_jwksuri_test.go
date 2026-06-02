@@ -8,7 +8,6 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
-	"math/big"
 	"net/http"
 	"sync/atomic"
 	"testing"
@@ -263,6 +262,3 @@ func signTestJWT(t *testing.T, key *rsa.PrivateKey, header map[string]string, cl
 	return signingInput + "." + base64.RawURLEncoding.EncodeToString(sig)
 }
 
-// Suppress unused-import lint for math/big (used indirectly via mockOIDCServer
-// which is in oidc_test.go in the same package).
-var _ = big.NewInt

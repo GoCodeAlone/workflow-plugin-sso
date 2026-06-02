@@ -43,6 +43,13 @@ func (s *tokenExchangeStep) Execute(ctx context.Context, triggerData map[string]
 		}}, nil
 	}
 
+	if provider.OAuthCfg == nil || provider.OAuthCfg.Endpoint.TokenURL == "" {
+		return &sdk.StepResult{Output: map[string]any{
+			"success": false,
+			"error":   fmt.Sprintf("step.sso_token_exchange: provider %q is verify-only (jwksUri mode); code exchange requires an OIDC-discovery provider", providerName),
+		}}, nil
+	}
+
 	token, err := provider.OAuthCfg.Exchange(ctx, code)
 	if err != nil {
 		return &sdk.StepResult{Output: map[string]any{
